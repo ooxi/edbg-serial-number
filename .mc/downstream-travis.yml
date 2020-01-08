@@ -14,6 +14,31 @@ script:
  - mc $TARGET make
 
 
+# Deploy build artifact
+after_success:
+ - if [ "$TRAVIS_SECURE_ENV_VARS" == "true" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_REPO_SLUG" == "ooxi/edbg-serial-number" ]; then
+     SOURCE_FILE="edbg";
+
+     BINTRAY_VERSION="${TRAVIS_BUILD_NUMBER}";
+     BINTRAY_DIRECTORY="${TRAVIS_BRANCH}";
+     BINTRAY_FILE="edbg-serial-number-b${TRAVIS_BUILD_NUMBER}-${TARGET}-${TRAVIS_COMMIT:0:7}";
+
+     if [ "$TARGET" == "amd64-windows" ]; then
+       SOURCE_FILE="$SOURCE_FILE.exe";
+       BINTRAY_FILE="$BINTRAY_FILE.exe";
+     fi;
+
+     BINTRAY_RESPONSE=`curl -T "${SOURCE_FILE}" "-uooxi:${BINTRAY_DEPLOYMENT_API_KEY}" "https://api.bintray.com/content/ooxi/edbg-serial-number/travis-ci/${BINTRAY_VERSION}/${BINTRAY_DIRECTORY}/${BINTRAY_FILE}?publish=1&override=1"`;
+
+     if [ '{"message":"success"}' == "${BINTRAY_RESPONSE}" ]; then
+       echo "Artifact published at https://dl.bintray.com/ooxi/edbg-serial-number/${BINTRAY_DIRECTORY}/${BINTRAY_FILE}";
+     else
+       echo "Depolyment to Bintray failed with response ${BINTRAY_RESPONSE}";
+       exit 1;
+     fi
+   fi
+
+
 # Install all required dependencies
 install:
  - npm install -g mini-cross
