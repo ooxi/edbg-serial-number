@@ -1,0 +1,12 @@
+---
+base: fedora:31
+install:
+ - git
+ - openssh-clients 
+---
+#!/bin/bash
+
+
+sudo mkdir --parents "${HOME}/.ssh"
+sudo mv "/known_hosts" "${HOME}/.ssh/known_hosts"
+

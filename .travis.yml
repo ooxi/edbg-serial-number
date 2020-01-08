@@ -1,0 +1,14 @@
+# Build target
+script:
+ - mc _ ./auto-rebase.sh $TRAVIS_BUILD_NUMBER $GITHUB_SSH_KEY_BASE64
+
+# Install all required dependencies
+install:
+ - npm install -g mini-cross
+ - mc _ echo 'Install successful'
+
+language: node_js
+
+services:
+- docker
+
