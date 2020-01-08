@@ -19,9 +19,9 @@ after_success:
  - if [ "$TRAVIS_SECURE_ENV_VARS" == "true" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_REPO_SLUG" == "ooxi/edbg-serial-number" ]; then
      SOURCE_FILE="edbg";
 
-     BINTRAY_VERSION="${TRAVIS_BUILD_NUMBER}";
+     BINTRAY_VERSION=$(echo "${TRAVIS_BRANCH}" | sed 's/version\///');
      BINTRAY_DIRECTORY="${TRAVIS_BRANCH}";
-     BINTRAY_FILE="edbg-serial-number-b${TRAVIS_BUILD_NUMBER}-${TARGET}-${TRAVIS_COMMIT:0:7}";
+     BINTRAY_FILE="edbg-serial-number-${BINTRAY_VERSION}-${TARGET}-b${TRAVIS_BUILD_NUMBER}";
 
      if [ "$TARGET" == "amd64-windows" ]; then
        SOURCE_FILE="$SOURCE_FILE.exe";
