@@ -79,10 +79,10 @@ git -C "${REPOSITORY}" apply --check "${PATCH_1}"
 git -C "${REPOSITORY}" am < "${PATCH_1}"
 
 
-# Create new branch including all patches
+# Create new tag including all patches
 BRANCH="version/${COMMIT_NUMBER}-${COMMIT_ID}-${TRAVIS_BUILD_NUMBER}"
 
-git -C "${REPOSITORY}" switch --create "${BRANCH}"
+git -C "${REPOSITORY}" tag "${BRANCH}"
 
 
 # If a dry-run is performed, just copy the resulting repository into working
