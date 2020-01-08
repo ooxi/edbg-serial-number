@@ -5,7 +5,13 @@ A friendly fork of [edbg][edbg], carrying [PR#91][edbg-pr-91].
 [This patch][patch] enables printing the target's serial number using SWD.
 
 
-# Sample output
+## Download
+
+Prebuild binaries are published on [Bintray][bintray-prebuild-binaries]. Be sure
+to use the latest version at the bottom!
+
+
+## Sample output
 
 ```
 Debugger: ATMEL EDBG CMSIS-DAP ATML2130021800020377 03.22.01B3 (S)
@@ -17,6 +23,7 @@ Verification....................................................................
 ```
 
 
+[bintray-prebuild-binaries]: https://dl.bintray.com/ooxi/edbg-serial-number/version/
 [edbg]: https://github.com/ataradov/edbg
 [edbg-pr-91]: https://github.com/ataradov/edbg/pull/91
 [patch]: patch/0001-Print-serial-number-of-CM0-target.patch
