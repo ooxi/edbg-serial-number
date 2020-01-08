@@ -60,6 +60,18 @@ COMMIT_NUMBER=`git -C "${REPOSITORY}" rev-list --count "${REBASE_UPON}"`
 COMMIT_ID=`git -C "${REPOSITORY}" rev-parse --short=4 "${REBASE_UPON}"`
 
 
+# Remove upstream Travis CI configuration and provide custom build environment
+cp "${DIRECTORY_OF_SCRIPT}/.mc/downstream-travis.yml" "${REPOSITORY}/.travis.yml"
+
+mkdir --parents "${REPOSITORY}/.mc"
+cp "${DIRECTORY_OF_SCRIPT}/.mc/amd64-fedora.yaml" "${REPOSITORY}/.mc/"
+cp "${DIRECTORY_OF_SCRIPT}/.mc/amd64-windows.yaml" "${REPOSITORY}/.mc/"
+
+git -C "${REPOSITORY}" add '.travis.yml'
+git -C "${REPOSITORY}" add '.mc'
+git -C "${REPOSITORY}" commit --message='Replace upstream build environment'
+
+
 # Apply patches
 PATCH_1="${DIRECTORY_OF_SCRIPT}/patch/0001-Print-serial-number-of-CM0-target.patch"
 
@@ -71,6 +83,18 @@ git -C "${REPOSITORY}" am < "${PATCH_1}"
 BRANCH="version/${COMMIT_NUMBER}-${COMMIT_ID}-${TRAVIS_BUILD_NUMBER}"
 
 git -C "${REPOSITORY}" switch --create "${BRANCH}"
+
+
+# If a dry-run is performed, just copy the resulting repository into working
+# directory but do not publish to GitHuB
+if [ "dry-run" == "${TRAVIS_BUILD_NUMBER}" ]; then
+	if [ -d "${DIRECTORY_OF_SCRIPT}/dry-run" ]; then
+		rm -rf "${DIRECTORY_OF_SCRIPT}/dry-run"
+	fi
+
+	cp --recursive "${REPOSITORY}" "${DIRECTORY_OF_SCRIPT}/dry-run"
+	exit 0
+fi
 
 
 # Deploy branch to GitHub, causing another build

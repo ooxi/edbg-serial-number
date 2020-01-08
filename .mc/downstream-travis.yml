@@ -1,0 +1,28 @@
+# Supported targets
+#
+# @see .mc/$TARGET.yaml
+matrix:
+ include:
+  - os: linux
+    env: TARGET=amd64-fedora
+  - os: linux
+    env: TARGET=amd64-windows
+
+
+# Build target
+script:
+ - mc $TARGET make
+
+
+# Install all required dependencies
+install:
+ - npm install -g mini-cross
+ - mc $TARGET echo 'Install successful'
+
+
+language: node_js
+
+
+services:
+- docker
+
