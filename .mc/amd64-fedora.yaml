@@ -1,0 +1,8 @@
+---
+base: fedora:31
+install:
+ - gcc
+ - libudev-devel
+ - make
+---
+
