@@ -1,0 +1,34 @@
+---
+base: fedora:31
+install:
+ - git
+ - make
+ - mingw64-gcc
+---
+#!/bin/bash
+
+
+# Provide CC wrapper
+#
+# @see https://github.com/ataradov/edbg/blob/945fc428bb1979e624721e62bd72374c31fe08f6/.travis.yml#L54
+git clone --branch=v2.5 --depth=1 'https://github.com/uic-evl/omicron.git' '/tmp/omicron'
+sudo mv '/tmp/omicron' '/opt/omicron'
+
+sudo tee '/bin/gcc' > /dev/null <<EOT
+#!/bin/bash
+
+x86_64-w64-mingw32-gcc -I/opt/omicron/external/include/ddk \$@
+EOT
+
+sudo chmod +x '/bin/gcc'
+
+
+# Provide UNAME wrapper
+sudo tee '/bin/uname' > /dev/null <<EOT
+#!/bin/bash
+
+echo 'Windows'
+EOT
+
+sudo chmod +x '/bin/uname'
+
