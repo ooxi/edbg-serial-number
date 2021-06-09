@@ -1,0 +1,53 @@
+# Supported targets
+#
+# @see .mc/$TARGET.yaml
+matrix:
+ include:
+  - os: linux
+    env: TARGET=amd64-fedora
+  - os: linux
+    env: TARGET=amd64-windows
+
+
+# Build target
+script:
+ - mc $TARGET make
+
+
+# Deploy build artifact
+after_success:
+ - if [ "$TRAVIS_SECURE_ENV_VARS" == "true" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_REPO_SLUG" == "ooxi/edbg-serial-number" ]; then
+     SOURCE_FILE="edbg";
+
+     BINTRAY_VERSION=$(echo "${TRAVIS_BRANCH}" | sed 's/version\///');
+     BINTRAY_DIRECTORY="${TRAVIS_BRANCH}";
+     BINTRAY_FILE="edbg-serial-number-${BINTRAY_VERSION}-${TARGET}-b${TRAVIS_BUILD_NUMBER}";
+
+     if [ "$TARGET" == "amd64-windows" ]; then
+       SOURCE_FILE="$SOURCE_FILE.exe";
+       BINTRAY_FILE="$BINTRAY_FILE.exe";
+     fi;
+
+     BINTRAY_RESPONSE=`curl -T "${SOURCE_FILE}" "-uooxi:${BINTRAY_DEPLOYMENT_API_KEY}" "https://api.bintray.com/content/ooxi/edbg-serial-number/travis-ci/${BINTRAY_VERSION}/${BINTRAY_DIRECTORY}/${BINTRAY_FILE}?publish=1&override=1"`;
+
+     if [ '{"message":"success"}' == "${BINTRAY_RESPONSE}" ]; then
+       echo "Artifact published at https://dl.bintray.com/ooxi/edbg-serial-number/${BINTRAY_DIRECTORY}/${BINTRAY_FILE}";
+     else
+       echo "Depolyment to Bintray failed with response ${BINTRAY_RESPONSE}";
+       exit 1;
+     fi
+   fi
+
+
+# Install all required dependencies
+install:
+ - npm install -g mini-cross
+ - mc $TARGET echo 'Install successful'
+
+
+language: node_js
+
+
+services:
+- docker
+
